@@ -1,0 +1,478 @@
+[sourcecode language="C" highlight="146,147-249"]
+/** C++ implementation for Red-Black Tree Insertion
+   This code is adopted from the code provided by
+   Dinesh Khandelwal in comments **/
+#include <bits/stdc++.h>
+using namespace std;
+
+enum Color {RED, BLACK};
+
+struct Node
+{
+    int data;
+    bool color;
+    Node *left, *right, *parent;
+
+    // Constructor
+    Node(int data)
+    {
+       this->data = data;
+       left = right = parent = NULL;
+       this->color = RED;
+    }
+};
+
+// Class to represent Red-Black Tree
+class RBTree
+{
+private:
+    Node *root;
+protected:
+    void rotateLeft(Node *&, Node *&);
+    void rotateRight(Node *&, Node *&);
+    void fixViolation(Node *&, Node *&);
+public:
+    // Constructor
+    RBTree() { root = NULL; }
+    void insert(const int &n);
+    void inorder();
+    void levelOrder();
+};
+
+// A recursive function to do level order traversal
+void inorderHelper(Node *root)
+{
+    if (root == NULL)
+        return;
+
+    inorderHelper(root->left);
+    cout << root->data << "  ";
+    inorderHelper(root->right);
+}
+
+/* A utility function to insert a new node with given key
+   in BST */
+Node* BSTInsert(Node* root, Node *node)
+{
+    /* If the tree is empty, return a new node */
+    if (root == NULL)
+       return node;
+
+    /* Otherwise, recur down the tree */
+    if (node->data < root->data)
+    {
+        root->left  = BSTInsert(root->left, node);
+        root->left->parent = root;
+    }
+    else if (node->data > root->data)
+    {
+        root->right = BSTInsert(root->right, node);
+        root->right->parent = root;
+    }
+
+    /* return the (unchanged) node pointer */
+    return root;
+}
+
+// Utility function to do level order traversal
+void levelOrderHelper(Node *root)
+{
+    if (root == NULL)
+        return;
+
+    std::queue<Node *> q;
+    q.push(root);
+
+    while (!q.empty())
+    {
+        Node *temp = q.front();
+        cout << temp->data << "  ";
+        q.pop();
+
+        if (temp->left != NULL)
+            q.push(temp->left);
+
+        if (temp->right != NULL)
+            q.push(temp->right);
+    }
+}
+
+void RBTree::rotateLeft(Node *&root, Node *&node)
+{
+    Node *new_node = node->right;
+
+    node->right = new_node->left;
+
+    if (node->right != NULL)
+        node->right->parent = node;
+
+    new_node->parent = node->parent;
+
+    if (node->parent == NULL)
+        root = new_node;
+
+    else if (node == node->parent->left)
+        node->parent->left = new_node;
+
+    else
+        node->parent->right = new_node;
+
+    new_node->left = node;
+    node->parent = new_node;
+}
+
+void RBTree::rotateRight(Node *&root, Node *&node)
+{
+    Node *new_node = node->left;
+
+    node->left = new_node->right;
+
+    if (node->left != NULL)
+        node->left->parent = node;
+
+    new_node->parent = node->parent;
+
+    if (node->parent == NULL)
+        root = new_node;
+
+    else if (node == node->parent->left)
+        node->parent->left = new_node;
+
+    else
+        node->parent->right = new_node;
+
+    new_node->right = node;
+    node->parent = new_node;
+}
+
+// This function fixes violations caused by BST insertion
+void RBTree::fixViolation(Node *&root, Node *&node)
+{
+    Node *parent = NULL;
+    Node *grand_parent = NULL;
+
+    while ((node != root) && (node->color != BLACK) &&
+           (node->parent->color == RED))
+    {
+
+        parent = node->parent;
+        grand_parent = node->parent->parent;
+
+        /*  Case : A
+            Parent of node is left child of Grand-parent of node */
+        if (parent == grand_parent->left)
+        {
+
+            Node *uncle = grand_parent->right;
+
+            /* Case : 1
+               The uncle of node is also red
+               Only Recoloring required */
+            if (uncle != NULL && uncle->color == RED)
+            {
+                grand_parent->color = RED;
+                parent->color = BLACK;
+                uncle->color = BLACK;
+                node = grand_parent;
+            }
+
+            else
+            {
+                /* Case : 2
+                   node is right child of its parent
+                   Left-rotation required */
+                if (node == parent->right)
+                {
+                    rotateLeft(root, parent);
+                    node = parent;
+                    parent = node->parent;
+                }
+
+                /* Case : 3
+                   node is left child of its parent
+                   Right-rotation required */
+                rotateRight(root, grand_parent);
+                swap(parent->color, grand_parent->color);
+                node = parent;
+            }
+        }
+
+        /* Case : B
+           Parent of node is right child of Grand-parent of node */
+        else
+        {
+            Node *uncle = grand_parent->left;
+
+            /*  Case : 1
+                The uncle of node is also red
+                Only Recoloring required */
+            if ((uncle != NULL) && (uncle->color == RED))
+            {
+                grand_parent->color = RED;
+                parent->color = BLACK;
+                uncle->color = BLACK;
+                node = grand_parent;
+            }
+            else
+            {
+                /* Case : 2
+                   node is left child of its parent
+                   Right-rotation required */
+                if (node == parent->left)
+                {
+                    rotateRight(root, parent);
+                    node = parent;
+                    parent = node->parent;
+                }
+
+                /* Case : 3
+                   node is right child of its parent
+                   Left-rotation required */
+                rotateLeft(root, grand_parent);
+                swap(parent->color, grand_parent->color);
+                node = parent;
+            }
+        }
+    }
+
+    root->color = BLACK;
+}
+
+// Function to insert a new node with given data
+void RBTree::insert(const int &data)
+{
+    Node *node = new Node(data);
+
+    // Do a normal BST insert
+    root = BSTInsert(root, node);
+
+    // fix Red Black Tree violations
+    fixViolation(root, node);
+}
+
+// Function to do inorder and level order traversals
+void RBTree::inorder()     {  inorderHelper(root);}
+void RBTree::levelOrder()  {  levelOrderHelper(root); }
+
+// Driver Code
+int main()
+{
+    RBTree tree;
+
+    tree.insert(7);
+    tree.insert(6);
+    tree.insert(5);
+    tree.insert(4);
+    tree.insert(3);
+    tree.insert(2);
+    tree.insert(1);
+
+    cout << "Inoder Traversal of Created Tree\n";
+    tree.inorder();
+
+    cout << "\n\nLevel Order Traversal of Created Tree\n";
+    tree.levelOrder();
+
+    return 0;
+}
+[/sourcecode]
+
+[sourcecode language="Python3" highlight=""]
+#prerequisites are BinarySearchTree and AVLTree
+# Python3 code for Red-Black Tree insertion
+class Node:
+	#details of each node
+	def __init__(self,data):
+		self.data = data
+		self.left = None
+		self.right = None
+		self.parent = None
+		self.color = 1
+#Class to represent Red-Black Tree		
+class REDBLACK:
+	#Initializing the root as None
+	def __init__(self):
+		self.root = None
+	
+	def insert(self,data):
+
+                #If self.root is None, then make newNode as root
+		if self.root is None:
+			self.root = Node(data)
+			self.root.color = 0
+			return
+
+                #Else insert newNode in the correct position
+
+		newNode = Node(data)
+		self.root = self.insertNode(self.root,newNode)
+                
+		self.fixViolation(newNode)
+               #Fix the node because the insertion of newNode may violate the red-black 
+                properties
+		
+	def insertNode(self,node,inode):
+
+		#If node is empty return the newNode
+
+		if node is None:
+			return inode
+
+		#If the newnode.data < or > node.data then recur down the tree	
+
+		if inode.data < node.data:
+			node.left = self.insertNode(node.left,inode)
+			node.left.parent = node
+		elif inode.data >= node.data:
+			node.right = self.insertNode(node.right,inode)
+			node.right.parent = node
+		
+		return node
+		
+	def fixViolation(self,curNode):
+	        #Fixing violation has 2 main cases A and B
+                #case A: when the uncle's color is Red
+                #case B: when the uncle's color is Black which in four subcases(LL, LR, RL, RR)
+                #case B1: parent is the left child of grandparent and node is the left child of parent
+
+		parent = None
+		grandParent = None
+		
+                #continue fixing of the violation until the curNode reaches the root or the
+                #the color of the curNode or its parent change.
+
+		while curNode!= self.root and  curNode.color == 1 and curNode.parent.color == 1:
+			
+			parent = curNode.parent
+			grandParent = parent.parent
+			
+			if parent == grandParent.left:
+				
+				uncle = grandParent.right
+
+				#case A: when the uncle's color is Red
+				if uncle is not None and uncle.color == 1:
+
+				        #make the color of parent and uncle as black and gp as red
+                                        #and curNode as grandParent(beacuse the below ones are fixed).
+					grandParent.color = 1
+					parent.color = 0
+					uncle.color = 0
+					curNode = grandParent
+				
+				else:
+					#case B2: when the parent is left child of grandparent(gp)
+                                        #and curNode is the right child of the parent(Do LL then RR).
+
+					if curNode == parent.right:
+                                                #LeftRotation
+						self.leftRotate(parent)
+
+                                                #In the above rotation curNode and parent gets swapped
+
+						curNode = parent
+						parent = curNode.parent
+
+                                        #RightRotation. 
+                                        #It is also the code for case B1(Left-Left).
+
+					self.rightRotate(grandParent)
+					parent.color,grandParent.color = grandParent.color,parent.color
+					curNode = parent
+                                        
+			else:
+				
+				uncle = grandParent.left
+
+				#case A: when the uncle's color is Red
+				if uncle is not None and uncle.color == 1:
+
+					#make the color of parent and uncle as black and gp as red
+                                        #and curNode as grandParent(beacuse the below ones are fixed).
+					grandParent.color = 1
+					parent.color = 0
+					uncle.color = 0
+					curNode = grandParent
+					
+				else:
+					#case B3: when the parent is right child of grandparent(gp)
+                                        #and curNode is the left child of the parent(Do RR then LL).
+
+					if curNode == parent.left:
+						#RightRotation
+						self.rightRotate(parent)
+                                                
+                                                #In the above rotation curNode and parent gets swapped
+						curNode = parent
+						parent = curNode.parent
+
+					#LeftRotation. 
+                                        #It is also the code for case B4(Right-Right).
+
+					self.leftRotate(grandParent)
+					parent.color,grandParent.color = grandParent.color,parent.color
+					curNode = parent
+		
+                #Always make the root node color as black.
+		self.root.color = 0
+               
+		
+	def rightRotate(self,node):
+		
+		newNode = node.left
+		node.left = node.left.right
+
+		if node.left is not None:
+			node.left.parent = node
+
+		newNode.parent = node.parent
+		if node.parent is None:
+			self.root = newNode
+		elif node == node.parent.left:
+			node.parent.left = newNode
+		else:
+			node.parent.right = newNode
+		newNode.right = node
+		node.parent = newNode
+		
+	def leftRotate(self,node):
+		
+		newNode = node.right
+		
+		node.right = newNode.left
+		if node.right is not None:
+			node.right.parent = node
+			
+		newNode.parent = node.parent
+		if node.parent is None:
+			self.root = newNode
+		elif node == node.parent.right:
+			node.parent.right = newNode
+		else:
+			node.parent.left = newNode
+		
+		newNode.left = node
+		node.parent = newNode
+		
+		
+	def levelorder(self):
+            q = []
+            q.append(self.root)
+            while q!=[]:
+                curNode = q.pop(0)
+                if curNode.left is not None:
+                    q.append(curNode.left)
+                if curNode.right is not None:
+                    q.append(curNode.right)
+                print(curNode.data,end=" ")
+
+rb = REDBLACK()
+rb.insert(7)
+rb.insert(6)
+rb.insert(5)
+rb.insert(4)
+rb.insert(3)
+rb.insert(2)
+rb.insert(1)
+rb.levelorder()
+[/sourcecode]
