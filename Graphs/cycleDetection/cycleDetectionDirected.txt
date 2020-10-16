@@ -1,0 +1,16 @@
+we can detect cycle in directed graphs in many ways:
+    
+    1.Using DFS (visited and recStack)
+    2.Using Coloring (white, gray and black)
+    3.Using kahn's algorithm (BFS)
+        --- calculate indegree of each vertex, if indegree == 0 push into queue
+            pop the element from the queue, decrease indegree of neighbours by 1
+            if indegree(neighbours) == 0 push them into queue !!!!while q!=[]
+        --- if number of pops == number of vertices:
+                -No cycle
+        ---> If we modify above algorithm and use heap data structure instead of 
+                queue while heappopping push them into array and
+                    - if no cycles:
+                        print(arr)
+                        
+            ********TOPOLOGICAL SORTING*********

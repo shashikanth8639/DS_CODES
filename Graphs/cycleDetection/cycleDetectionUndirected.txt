@@ -1,0 +1,29 @@
+we can detect cycle in undirected graphs in many ways:
+
+    1.Using Union-Find data structure
+        -- use path compression Find
+        -- use rank Union
+        -- use parent,rank and prev arrays
+        if prev[root] != child and parent[root]!=parent[child] and root != child:
+            -No cycle
+        ----------->'https://ide.geeksforgeeks.org/gwfN67SEmu'
+    2.Using DFS (visited and parent)
+        --- for every node if it is not visited:
+                do dfsutil for each node as parent = node
+                make node as visited
+                    in DFSutil for every adjacent node:
+                        if not visited do DFS:
+                            if true or parent!= parent-parameter:
+                                return True
+    2.Using BFS similar to DFS
+        --- here we use parent array(beacuse of no recursion)
+    3.printing cycle using algorithm similar to kahn's algorithm indegree==1
+        --vertices which are not visited forms a cycle, print them.
+    
+    
+    
+    
+    
+    
+    2.Using Coloring (white, gray and black)
+    3.Using kahn's algorithm
