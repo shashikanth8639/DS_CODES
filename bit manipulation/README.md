@@ -1,4 +1,4 @@
-##Bit Manipulation (between two operands)
+# Bit Manipulation (between two operands)
 
     - **AND Operation**: Returns 1 if both operands are 1 [1&1 --> 1] else 0
         - performing AND with 0 on the respective bit 0 will set it to 0 [masking]
