@@ -9,9 +9,10 @@
   - **XOR Operation**: Returns 1 if both operands are different else 0 [0^1 --> 1]
     - performing XOR with 1 on the respective bit will toggle nth bit
 
-  - **LeftShift(<<)**: Will multiply the operand by 2 [4<<1 --> 8]
+  - **Left Shift**: Will multiply the operand by 2 [4<<1 --> 8]
 
-  - **RightShift(>>)**: Will divide the operand by 2  and value will be floored  [4>>1 --> 2]
+  - **Right Shift**: Will divide the operand by 2  and value will be floored  [4>>1 --> 2]
+
 
 ## Representing Negative Numbers:
 
@@ -19,6 +20,7 @@
     [+ve -> 0 & -ve -> 1]
 
     Adding the positive and negative of same number will return zero. It is repsented in a way that the adding this value to the postive of number will         return the 2^8 value [for an 8-bit number].
+
 
 ### Logical Shift vs Arithmetic Shift:
 
