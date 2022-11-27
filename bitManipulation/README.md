@@ -26,3 +26,14 @@
 
     Arithmetic right shift will preserves the arithmetic relationship between the otiginal number and the new one. 
     Right shift will pick up the ceil value for negaative numbers
+
+### Satements | Facts
+
+  - doing AND with 1 will return whether number is odd or even
+
+  - **OR opertion will always be >= AND, XOR**
+  
+  - All these operators are both commutative and associative
+    - a|b|c --> b|a|c
+  
+  - a|a -> a, a|0 -> a, a&a -> a, a&0 -> 0, a^a -> 0, a^0 -> a
